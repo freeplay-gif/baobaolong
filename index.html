@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>只属于宝宝龙的浪漫</title>
+    <!-- 引入图标库 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <style>
+        /* 全局：蓝色渐变背景 */
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #e6f0ff, #cce0ff);
+            min-height: 100vh;
+            font-family: "Comic Sans MS", "幼圆", "Arial Rounded MT Bold", "Microsoft YaHei", sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 开场界面 */
+        .opening-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #cce0ff, #99c2ff);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+        }
+        /* 龙形图标 */
+        .dragon-icon {
+            font-size: 90px;
+            color: #66a3ff;
+            text-shadow: 0 0 8px #fff;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+        .opening-text {
+            font-size: 36px;
+            color: #3385ff;
+            font-weight: 500;
+            transform: scale(0.95);
+            text-shadow: 0 0 15px rgba(51, 133, 255, 0.3), 
+                         0 2px 4px rgba(0,0,0,0.1);
+            animation: breath 2.5s infinite alternate;
+            text-align: center;
+            padding: 0 20px;
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(102, 163, 255, 0.2);
+            transform: scale(0);
+            animation: ripple 0.9s linear;
+        }
+
+        /* 弹窗样式（统一蓝色调+高透明度） */
+        .tip-window {
+            position: absolute;
+            width: 290px;
+            height: 90px;
+            border: 2px dashed rgba(102, 163, 255, 0.7); /* 半透明蓝色边框 */
+            border-radius: 20px;
+            box-shadow: 0 5px 18px rgba(102, 163, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px; /* 增大字体 */
+            color: #3385ff;
+            z-index: 9999;
+            transition: opacity 0.4s ease, transform 0.3s ease;
+            opacity: 0;
+            transform: scale(0.9) translateY(10px);
+            background-color: rgba(230, 240, 255, 0.85); /* 高透明度蓝色背景 */
+            /* 更可爱的字体组合 */
+            font-family: "Comic Sans MS", "Marker Felt", "幼圆", "Arial Rounded MT Bold", cursive;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8); /* 增加文字立体感 */
+            text-align: center;
+            padding: 10px;
+        }
+        .tip-window.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* 最终弹窗样式（蓝色系） */
+        .final-window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 320px;
+            height: 100px;
+            background-color: rgba(230, 240, 255, 0.9);
+            border: 3px solid rgba(102, 163, 255, 0.8);
+            border-radius: 24px;
+            box-shadow: 0 8px 25px rgba(102, 163, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 500;
+            color: #3385ff;
+            z-index: 10000;
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                        box-shadow 0.5s ease;
+            font-family: "Comic Sans MS", "Marker Felt", "幼圆", cursive;
+            text-align: center;
+            padding: 10px;
+        }
+        .final-window.show {
+            transform: translate(-50%, -50%) scale(1);
+            box-shadow: 0 10px 30px rgba(102, 163, 255, 0.35);
+        }
+
+        /* 小龙标志样式（蓝色） */
+        .dragon-small-icon {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+            color: #66a3ff;
+            text-shadow: 0 2px 5px rgba(51, 133, 255, 0.2);
+            z-index: 10001;
+            opacity: 0;
+            transition: opacity 1s ease, transform 1s ease;
+            transform: translateX(-50%) scale(0.8);
+        }
+        .dragon-small-icon.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* 动画关键帧 */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        @keyframes breath {
+            from { transform: scale(0.95); opacity: 0.9; }
+            to { transform: scale(1.05); opacity: 1; }
+        }
+        @keyframes ripple {
+            to {
+                transform: scale(25);
+                opacity: 0;
+            }
+        }
+        /* 小龙图标浮动动画 */
+        @keyframes dragonFloat {
+            0% { transform: translateX(-50%) translateY(0px); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+            100% { transform: translateX(-50%) translateY(0px); }
+        }
+        
+        /* 星星背景装饰 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 星星背景 -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- 开场界面 -->
+    <div class="opening-screen" id="openingScreen">
+        <i class="fa fa-paw dragon-icon" aria-hidden="true"></i>
+        <div class="opening-text">宝宝龙，这是小弟给你送的一封信，请开封</div>
+    </div>
+
+    <!-- 小龙标志（初始隐藏） -->
+    <i class="fa fa-paw dragon-small-icon" aria-hidden="true"></i>
+
+    <script>
+        // 宝宝龙专属祝福列表（增加至50条）
+        const tips = [
+            '宝宝龙今天也要闪闪发光呀',
+            '愿宝宝龙每天都被甜甜的幸福包围',
+            '宝宝龙的笑容比阳光还要温暖呢',
+            '想一直守护宝宝龙的每一个小情绪',
+            '宝宝龙今天有没有吃到喜欢的小甜品呀',
+            '希望宝宝龙的每一天都像棉花糖一样甜',
+            '宝宝龙不管做什么都超可爱的',
+            '会永远做宝宝龙最忠实的倾听者',
+            '宝宝龙的小脑袋里一定装满了可爱的想法吧',
+            '愿宝宝龙的所有烦恼都像泡泡一样消失',
+            '每天都在期待宝宝龙分享的小日常',
+            '宝宝龙的存在本身就是一件超美好的事',
+            '想陪宝宝龙看遍每一个日出日落',
+            '宝宝龙要一直保持这份纯真和善良呀',
+            '会把宝宝龙的每一句话都好好记在心里',
+            '宝宝龙累了的时候一定要记得休息呀',
+            '全世界最好的宝宝龙要天天开心',
+            '愿宝宝龙的梦想都能悄悄发芽结果',
+            '宝宝龙的眼睛里有星星呢，亮晶晶的',
+            '想和宝宝龙一起创造更多美好的回忆',
+            '宝宝龙今天也有好好照顾自己吗',
+            '看到宝宝龙开心，我也会跟着开心呢',
+            '宝宝龙不管穿什么都特别好看',
+            '会一直支持宝宝龙想做的所有事情',
+            '愿宝宝龙的每一天都充满小确幸',
+            '宝宝龙的声音像小铃铛一样好听呢',
+            '想牵着宝宝龙的手慢慢走过每一个四季',
+            '宝宝龙偶尔的小迷糊也超可爱的',
+            '希望宝宝龙永远不用长大，一直这么可爱',
+            '会努力成为能让宝宝龙依靠的人',
+            '宝宝龙喜欢的东西一定会慢慢实现的',
+            '每天都在偷偷为宝宝龙加油哦',
+            '宝宝龙的小缺点在我眼里也是优点呢',
+            '愿宝宝龙每天都能睡个甜甜的好觉',
+            '想把所有美好的东西都送给宝宝龙',
+            '宝宝龙认真的样子真的太有魅力啦',
+            '会永远站在宝宝龙这边支持你',
+            '希望宝宝龙的世界里永远没有乌云',
+            '宝宝龙笑起来的时候，整个世界都亮了',
+            '想陪宝宝龙吃遍所有好吃的东西',
+            '宝宝龙今天也有被温柔对待吗',
+            '愿宝宝龙的生活像彩虹一样绚烂',
+            '会把宝宝龙放在心尖尖上好好疼惜',
+            '宝宝龙的每一个小成就都值得庆祝',
+            '希望宝宝龙永远保持这份对生活的热爱',
+            '看到宝宝龙就觉得所有的辛苦都值得了',
+            '宝宝龙是上天赐予最好的礼物呀',
+            '想和宝宝龙一起慢慢变老呀',
+            '宝宝龙的存在让世界都变得更美好了',
+            '会做宝宝龙一辈子的专属守护者呀'
+        ];
+
+        // 创建星星背景
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // 随机大小和位置
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                
+                // 随机动画延迟
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // 生成屏幕内随机位置
+        function getRandomPos() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const x = Math.max(15, Math.floor(Math.random() * (screenWidth - 300)));
+            const y = Math.max(15, Math.floor(Math.random() * (screenHeight - 100)));
+            return { x, y };
+        }
+
+        // 创建弹窗（固定单一蓝色+高透明度）
+        function createTipWindow() {
+            const { x, y } = getRandomPos();
+            const tip = tips[Math.floor(Math.random() * tips.length)];
+
+            const window = document.createElement('div');
+            window.className = 'tip-window';
+            window.style.left = `${x}px`;
+            window.style.top = `${y}px`;
+            window.textContent = tip;
+
+            document.body.appendChild(window);
+            setTimeout(() => {
+                window.classList.add('show');
+            }, 30);
+
+            return window;
+        }
+
+        // 弹窗关闭逻辑
+        function closeWindowsOneByOne(allWindows, index = 0, delay = 5) {
+            if (index < allWindows.length) {
+                const window = allWindows[index];
+                if (document.body.contains(window)) {
+                    window.style.opacity = 0;
+                    window.style.transform = 'scale(0.9) translateY(10px)';
+                    setTimeout(() => {
+                        document.body.removeChild(window);
+                    }, 300);
+                }
+                setTimeout(() => {
+                    closeWindowsOneByOne(allWindows, index + 1, delay);
+                }, delay);
+            } else {
+                createFinalWindow();
+                // 显示小龙图标
+                setTimeout(() => {
+                    document.querySelector('.dragon-small-icon').classList.add('show');
+                    document.querySelector('.dragon-small-icon').style.animation = 'dragonFloat 3s ease-in-out infinite';
+                }, 800);
+            }
+        }
+
+        // 最终弹窗
+        function createFinalWindow() {
+            const finalWindow = document.createElement('div');
+            finalWindow.className = 'final-window';
+            finalWindow.textContent = '要做宝宝龙一辈子的守护者～';
+            document.body.appendChild(finalWindow);
+            setTimeout(() => {
+                finalWindow.classList.add('show');
+            }, 100);
+        }
+
+        // 主逻辑
+        async function main() {
+            const allWindows = [];
+            const totalWindows = 200;
+            const initialDelay = 80;
+            const minDelay = 8;
+            const speedStep = 25;
+            const delayReduce = 1;
+
+            for (let i = 0; i < totalWindows; i++) {
+                const win = createTipWindow();
+                allWindows.push(win);
+                
+                const currentDelay = Math.max(
+                    initialDelay - Math.floor(i / speedStep) * delayReduce,
+                    minDelay
+                );
+                await awaitTimeout(currentDelay);
+            }
+
+            setTimeout(() => {
+                closeWindowsOneByOne(allWindows);
+            }, 3000);
+        }
+
+        // 延迟辅助函数
+        function awaitTimeout(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // 开场点击触发
+        const openingScreen = document.getElementById('openingScreen');
+        openingScreen.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            const x = e.clientX - ripple.offsetWidth / 2;
+            const y = e.clientY - ripple.offsetHeight / 2;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            openingScreen.appendChild(ripple);
+
+            openingScreen.style.opacity = 0;
+            setTimeout(() => {
+                openingScreen.remove();
+                main();
+            }, 600);
+        });
+
+        // 初始化星星背景
+        createStars();
+    </script>
+</body>
+</html>
